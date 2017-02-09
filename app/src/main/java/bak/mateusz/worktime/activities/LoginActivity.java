@@ -1,4 +1,4 @@
-package bak.mateusz.worktime;
+package bak.mateusz.worktime.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import bak.mateusz.worktime.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
