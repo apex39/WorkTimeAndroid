@@ -1,16 +1,22 @@
 package bak.mateusz.worktime.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -21,20 +27,13 @@ import java.util.List;
 
 import bak.mateusz.worktime.R;
 import bak.mateusz.worktime.activities.dialogs.ShopDialogFragment;
-import bak.mateusz.worktime.models.Credentials;
-import bak.mateusz.worktime.models.LoginResponse;
-import bak.mateusz.worktime.models.RecordsResponse;
+
 import bak.mateusz.worktime.models.ShopsResponse;
 import bak.mateusz.worktime.network.NetworkCalls;
-import bak.mateusz.worktime.network.WorkTimeClient;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
 
 import static android.text.InputType.TYPE_CLASS_NUMBER;
 import static android.text.InputType.TYPE_CLASS_TEXT;
@@ -43,8 +42,10 @@ import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
 public class LoginActivity extends AppCompatActivity {
     boolean IS_MANAGER_LOGIN = false;
+    String setShop;
     @BindView(R.id.login) EditText login;
     @BindView(R.id.password) EditText password;
+    @BindView(R.id.progress_bar) ProgressBar progressBar;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -55,8 +56,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences settings = getSharedPreferences("preferences", 0);
+        setShop = settings.getString("registered_shop", getString(R.string.app_name));
+        this.setTitle(setShop);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
     }
 
     @Override
@@ -92,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void sendLoginRequest(View view){
+        progressBar.setVisibility(View.VISIBLE);
         NetworkCalls networkCalls = new NetworkCalls();
         networkCalls.login(login.getText().toString(),password.getText().toString());
     }
@@ -103,12 +109,12 @@ public class LoginActivity extends AppCompatActivity {
             shopsAddresses[i] = shopsResponse.get(i).address;
         }
 
+        DialogFragment shopDialog = new ShopDialogFragment();
         FragmentManager manager = getSupportFragmentManager();
-        ShopDialogFragment shopDialog = new ShopDialogFragment();
-
         Bundle bundle = new Bundle();
         bundle.putStringArray("shops_addresses",shopsAddresses);
         shopDialog.setArguments(bundle);
-        shopDialog.show(manager,"as");
+        progressBar.setVisibility(View.INVISIBLE);
+        shopDialog.show(manager,"shop_list");
     }
 }

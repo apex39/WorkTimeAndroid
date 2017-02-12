@@ -37,7 +37,9 @@ public class NetworkCalls {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse loginResponse = response.body();
-                EventBus.getDefault().post(loginResponse);
+                if (loginResponse != null) {
+                    EventBus.getDefault().post(loginResponse);
+                }
             }
 
             @Override
@@ -59,8 +61,10 @@ public class NetworkCalls {
                     @Override
                     public void onResponse(Call<List<ShopsResponse>> call, Response<List<ShopsResponse>> response) {
                         List<ShopsResponse> shopsResponse = response.body();
-                        EventBus.getDefault().post(shopsResponse);
+
+                        if(shopsResponse !=null)EventBus.getDefault().post(shopsResponse);
                     }
+
                     @Override
                     public void onFailure(Call<List<ShopsResponse>> call, Throwable t) {
                         EventBus.getDefault().post(t);
@@ -77,6 +81,7 @@ public class NetworkCalls {
                         List<ShopsResponse> shopsResponse = response.body();
                         EventBus.getDefault().post(shopsResponse);
                     }
+
                     @Override
                     public void onFailure(Call<List<ShopsResponse>> call, Throwable t) {
                         EventBus.getDefault().post(t);
@@ -93,6 +98,7 @@ public class NetworkCalls {
                         List<RecordsResponse> recordsResponse = response.body();
                         EventBus.getDefault().post(recordsResponse);
                     }
+
                     @Override
                     public void onFailure(Call<List<RecordsResponse>> call, Throwable t) {
                         EventBus.getDefault().post(t);
@@ -101,8 +107,6 @@ public class NetworkCalls {
                 recordsCall.enqueue(recordsCallback);
                 break;
         }
-
-
-
+        EventBus.getDefault().unregister(this);
     }
 }

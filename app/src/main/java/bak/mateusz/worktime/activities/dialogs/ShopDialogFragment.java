@@ -1,7 +1,9 @@
 package bak.mateusz.worktime.activities.dialogs;
 
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -20,7 +22,6 @@ public class ShopDialogFragment extends DialogFragment {
 
     String[] shopsAddresses;
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         shopsAddresses=getArguments().getStringArray("shops_addresses");
@@ -35,10 +36,14 @@ public class ShopDialogFragment extends DialogFragment {
         builder.setTitle("Select shop")
                 .setItems(shopsAddresses, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
+                        SharedPreferences settings = getActivity().getSharedPreferences("preferences", 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("registered_shop", shopsAddresses[which]);
+                        editor.apply();
+                        getActivity().setTitle(shopsAddresses[which]);
                     }
                 });
         return builder.create();
     }
+
 }
