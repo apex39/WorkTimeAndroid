@@ -31,4 +31,8 @@ public interface WorkTimeClient {
     @FormUrlEncoded
     @POST("records/")
     Call<List<RecordsResponse>> getRecords(@Field("username") String username, @Field("password") String password);
+    @FormUrlEncoded
+    @POST("activateuser/")
+    Call<LoginResponse> activateUser(@Field("username") String username, @Field("password") String password
+    , @Field("new_password") String newPassword);
 }

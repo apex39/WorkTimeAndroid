@@ -44,7 +44,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="sendLoginRequest"
+            android:id="@+id/loginButton"
             android:text="Login" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/default_pass_information"/>
     </LinearLayout>
 
 </LinearLayout>

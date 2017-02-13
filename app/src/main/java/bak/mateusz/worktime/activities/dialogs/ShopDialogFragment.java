@@ -5,9 +5,11 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class ShopDialogFragment extends DialogFragment {
     }
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -41,6 +44,7 @@ public class ShopDialogFragment extends DialogFragment {
                         editor.putString("registered_shop", shopsAddresses[which]);
                         editor.apply();
                         getActivity().setTitle(shopsAddresses[which]);
+                        Toast.makeText(getActivity().getApplicationContext(),"Shop successfully changed",Toast.LENGTH_LONG).show();
                     }
                 });
         return builder.create();
