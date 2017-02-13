@@ -1,18 +1,22 @@
 package bak.mateusz.worktime.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,6 +49,25 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.loginButton) Button loginButton;
     @BindView(R.id.progress_bar) ProgressBar progressBar;
     MenuItem changeShop;
+    SharedPreferences settings;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
+        settings = getSharedPreferences("preferences", 0);
+        this.setTitle(settings.getString("registered_shop", getString(R.string.app_name)));
+        password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                sendLoginRequest(v);
+                return true;
+            }
+        });
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -53,16 +76,6 @@ public class LoginActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
-        SharedPreferences settings = getSharedPreferences("preferences", 0);
-        setShop = settings.getString("registered_shop", getString(R.string.app_name));
-        this.setTitle(setShop);
-
-    }
 
     @Override
     public void onStart() {
@@ -125,9 +138,11 @@ public class LoginActivity extends AppCompatActivity {
             view.setEnabled(false);
             progressBar.setVisibility(View.VISIBLE);
             NetworkCalls networkCalls = new NetworkCalls();
-            networkCalls.login(login.getText().toString(),password.getText().toString());
+            networkCalls.login(login.getText().toString(),password.getText().toString(),
+                    settings.getString("registered_shop", getString(R.string.app_name)));
         } else {
             Toast.makeText(getApplicationContext(),"Password is too short",Toast.LENGTH_SHORT).show();
+            login.requestFocus();
         }
 
 
@@ -135,32 +150,43 @@ public class LoginActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onShopsResponse(List<ShopsResponse> shopsResponse) {
-        String[] shopsAddresses = new String[shopsResponse.size()];
-        for (int i = 0; i < shopsResponse.size(); i++) {
-            shopsAddresses[i] = shopsResponse.get(i).address;
-        }
+        if (shopsResponse.size()>0){         //TODO:shopResponse shouldn't get hit after worker login
+            String[] shopsAddresses = new String[shopsResponse.size()];
+            for (int i = 0; i < shopsResponse.size(); i++) {
+                shopsAddresses[i] = shopsResponse.get(i).address;
+            }
 
-        DialogFragment shopDialog = new ShopDialogFragment();
-        FragmentManager manager = getSupportFragmentManager();
-        Bundle bundle = new Bundle();
-        bundle.putStringArray("shops_addresses",shopsAddresses);
-        shopDialog.setArguments(bundle);
-        progressBar.setVisibility(View.INVISIBLE);
-        shopDialog.show(manager,"shop_list");
+            DialogFragment shopDialog = new ShopDialogFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            Bundle bundle = new Bundle();
+            bundle.putStringArray("shops_addresses",shopsAddresses);
+            shopDialog.setArguments(bundle);
+            progressBar.setVisibility(View.INVISIBLE);
+            shopDialog.show(manager,"shop_list");}
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLoginResponse(LoginResponse loginResponse) {
         progressBar.setVisibility(View.INVISIBLE);
         login.setEnabled(true);
+        login.requestFocus();
         password.setEnabled(true);
+        password.setText("");
         loginButton.setEnabled(true);
         if(loginResponse.role.equals("null") && loginResponse.status==false){
             Toast.makeText(getApplicationContext(),"Bad credentials",Toast.LENGTH_LONG).show();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         }
         else if(loginResponse.role.equals("worker") && loginResponse.status==false) {
             Toast.makeText(getApplicationContext(),"You are not activated, please provide a new password",Toast.LENGTH_LONG).show();
             Intent setPasswordIntent = new Intent(getApplicationContext(), SetPasswordActivity.class);
+            setPasswordIntent.putExtra("USERNAME", login.getText().toString());
+            setPasswordIntent.putExtra("PASSWORD", password.getText().toString());
+            startActivity(setPasswordIntent);
+        } else if(loginResponse.role.equals("worker") && loginResponse.status==true) {
+            Intent setPasswordIntent = new Intent(getApplicationContext(), MainActivity.class);
             setPasswordIntent.putExtra("USERNAME", login.getText().toString());
             setPasswordIntent.putExtra("PASSWORD", password.getText().toString());
             startActivity(setPasswordIntent);

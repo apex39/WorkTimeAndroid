@@ -21,7 +21,8 @@ import retrofit2.http.Path;
 public interface WorkTimeClient {
     @FormUrlEncoded
     @POST("login/")
-    Call<LoginResponse> loginWithCredentials(@Field("username") String username, @Field("password") String password);
+    Call<LoginResponse> loginWithCredentials(@Field("username") String username, @Field("password") String password,
+        @Field("shop") String shop);
     @FormUrlEncoded
     @POST("shops/")
     Call<List<ShopsResponse>> getAllShops(@Field("username") String username, @Field("password") String password);
@@ -33,6 +34,6 @@ public interface WorkTimeClient {
     Call<List<RecordsResponse>> getRecords(@Field("username") String username, @Field("password") String password);
     @FormUrlEncoded
     @POST("activateuser/")
-    Call<LoginResponse> activateUser(@Field("username") String username, @Field("password") String password
-    , @Field("new_password") String newPassword);
+    Call<LoginResponse> activateUser(@Field("username") String username, @Field("password") String password,
+         @Field("new_password") String newPassword);
 }

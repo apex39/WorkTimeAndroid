@@ -27,14 +27,14 @@ public class NetworkCalls {
     private String password;
     private WorkTimeClient client;
 
-    public void login(String username, String password) {
+    public void login(String username, String password, String setShop) {
         EventBus.getDefault().register(this);
         this.username = username;
         this.password = password;
         client = ClientGenerator.createService();
 
         Call<LoginResponse> loginCall =
-                client.loginWithCredentials(username, password);
+                client.loginWithCredentials(username, password, setShop);
         Callback<LoginResponse> loginCallCallback = new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -59,6 +59,23 @@ public class NetworkCalls {
     public void onLoginResponse(LoginResponse loginResponse) {
         if(loginResponse.status == true){
             switch (loginResponse.role) {
+                case "worker":
+                    Call<List<RecordsResponse>> recordsCall =
+                            client.getRecords(username, password);
+                    Callback<List<RecordsResponse>> recordsCallback = new Callback<List<RecordsResponse>>() {
+                        @Override
+                        public void onResponse(Call<List<RecordsResponse>> call, Response<List<RecordsResponse>> response) {
+                            List<RecordsResponse> recordsResponse = response.body();
+                            EventBus.getDefault().post(recordsResponse);
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<RecordsResponse>> call, Throwable t) {
+                            EventBus.getDefault().post(t);
+                        }
+                    };
+                    recordsCall.enqueue(recordsCallback);
+                    break;
                 case "admin":
                     Call<List<ShopsResponse>> allShopsCall =
                             client.getAllShops(username, password);
@@ -93,23 +110,6 @@ public class NetworkCalls {
                         }
                     };
                     managerShopsCall.enqueue(managerShopsCallback);
-                    break;
-                case "worker":
-                    Call<List<RecordsResponse>> recordsCall =
-                            client.getRecords(username, password);
-                    Callback<List<RecordsResponse>> recordsCallback = new Callback<List<RecordsResponse>>() {
-                        @Override
-                        public void onResponse(Call<List<RecordsResponse>> call, Response<List<RecordsResponse>> response) {
-                            List<RecordsResponse> recordsResponse = response.body();
-                            EventBus.getDefault().post(recordsResponse);
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<RecordsResponse>> call, Throwable t) {
-                            EventBus.getDefault().post(t);
-                        }
-                    };
-                    recordsCall.enqueue(recordsCallback);
                     break;
                 case "activation":
 

@@ -3,4 +3,5 @@
 
     <string name="change_shop">Change shop</string>
     <string name="default_pass_information">For first login, please use default password (\"1234\")</string>
+    <string name="title_activity_main">Record time</string>
 </resources>
