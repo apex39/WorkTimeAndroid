@@ -1,5 +1,6 @@
 package bak.mateusz.worktime.network;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import bak.mateusz.worktime.models.Credentials;
@@ -31,7 +32,7 @@ public interface WorkTimeClient {
     Call<List<ShopsResponse>> getManagerShops(@Field("username") String username, @Field("password") String password);
     @FormUrlEncoded
     @POST("records/")
-    Call<List<RecordsResponse>> getRecords(@Field("username") String username, @Field("password") String password);
+    Call<ArrayList<RecordsResponse>> getRecords(@Field("username") String username, @Field("password") String password);
     @FormUrlEncoded
     @POST("activateuser/")
     Call<LoginResponse> activateUser(@Field("username") String username, @Field("password") String password,

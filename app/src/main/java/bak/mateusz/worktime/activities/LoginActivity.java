@@ -43,7 +43,6 @@ import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
 public class LoginActivity extends AppCompatActivity {
     boolean IS_MANAGER_LOGIN = false;
-    String setShop;
     @BindView(R.id.login) EditText login;
     @BindView(R.id.password) EditText password;
     @BindView(R.id.loginButton) Button loginButton;
@@ -184,12 +183,16 @@ public class LoginActivity extends AppCompatActivity {
             Intent setPasswordIntent = new Intent(getApplicationContext(), SetPasswordActivity.class);
             setPasswordIntent.putExtra("USERNAME", login.getText().toString());
             setPasswordIntent.putExtra("PASSWORD", password.getText().toString());
+            EventBus.getDefault().unregister(this);
             startActivity(setPasswordIntent);
+            finish();
         } else if(loginResponse.role.equals("worker") && loginResponse.status==true) {
             Intent setPasswordIntent = new Intent(getApplicationContext(), MainActivity.class);
             setPasswordIntent.putExtra("USERNAME", login.getText().toString());
             setPasswordIntent.putExtra("PASSWORD", password.getText().toString());
+            EventBus.getDefault().unregister(this);
             startActivity(setPasswordIntent);
+            finish();
         }
     }
 

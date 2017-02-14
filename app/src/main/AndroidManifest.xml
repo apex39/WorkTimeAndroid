@@ -20,8 +20,9 @@
         <activity android:name=".activities.SetPasswordActivity"></activity>
         <activity
             android:name=".activities.MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="@string/title_activity_main">
+
+        </activity>
     </application>
 
 </manifest>

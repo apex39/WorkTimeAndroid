@@ -1,24 +1,17 @@
 package bak.mateusz.worktime.network;
 
-import android.widget.Toast;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONObject;
 
-import java.text.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
-import bak.mateusz.worktime.R;
 import bak.mateusz.worktime.models.LoginResponse;
 import bak.mateusz.worktime.models.RecordsResponse;
-
 import bak.mateusz.worktime.models.ShopsResponse;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Response;
 
 
@@ -55,22 +48,22 @@ public class NetworkCalls {
         loginCall.enqueue(loginCallCallback);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.POSTING)
     public void onLoginResponse(LoginResponse loginResponse) {
         if(loginResponse.status == true){
             switch (loginResponse.role) {
                 case "worker":
-                    Call<List<RecordsResponse>> recordsCall =
+                    Call<ArrayList<RecordsResponse>> recordsCall =
                             client.getRecords(username, password);
-                    Callback<List<RecordsResponse>> recordsCallback = new Callback<List<RecordsResponse>>() {
+                    Callback<ArrayList<RecordsResponse>> recordsCallback = new Callback<ArrayList<RecordsResponse>>() {
                         @Override
-                        public void onResponse(Call<List<RecordsResponse>> call, Response<List<RecordsResponse>> response) {
-                            List<RecordsResponse> recordsResponse = response.body();
+                        public void onResponse(Call<ArrayList<RecordsResponse>> call, Response<ArrayList<RecordsResponse>> response) {
+                            ArrayList<RecordsResponse> recordsResponse = response.body();
                             EventBus.getDefault().post(recordsResponse);
                         }
 
                         @Override
-                        public void onFailure(Call<List<RecordsResponse>> call, Throwable t) {
+                        public void onFailure(Call<ArrayList<RecordsResponse>> call, Throwable t) {
                             EventBus.getDefault().post(t);
                         }
                     };
@@ -112,9 +105,7 @@ public class NetworkCalls {
                     managerShopsCall.enqueue(managerShopsCallback);
                     break;
                 case "activation":
-
                         EventBus.getDefault().post(loginResponse);
-
                     break;
             }
         }
