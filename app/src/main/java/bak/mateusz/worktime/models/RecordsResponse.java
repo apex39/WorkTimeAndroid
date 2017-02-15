@@ -31,13 +31,15 @@ public class RecordsResponse {
     @Expose
     public Integer minutesSpent;
 
-    public LocalDateTime getCreatedAt(){
-            return DateTime.parse(createdAt, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")).toLocalDateTime();
+    public LocalDateTime getCreatedAt() {
+        return DateTime.parse(createdAt, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")).toLocalDateTime();
     }
-    public LocalDateTime getUpdatedAt(){
+
+    public LocalDateTime getUpdatedAt() {
         return DateTime.parse(updatedAt, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")).toLocalDateTime();
     }
-    public boolean getFinished(){
+
+    public boolean getFinished() {
         return finished == 1;
     }
 }

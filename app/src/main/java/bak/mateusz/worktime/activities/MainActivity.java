@@ -1,11 +1,13 @@
 package bak.mateusz.worktime.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -46,39 +48,60 @@ public class MainActivity extends AppCompatActivity {
     private Integer idWorkStarted;
     private Integer idBreakStarted;
 
-    @BindView(R.id.workButton) Button workButton;
-    @BindView(R.id.breakButton) Button breakButton;
-    @BindView(R.id.progress_bar) ProgressBar progressBar;
-    @BindView(R.id.webView) WebView webView;
+    @BindView(R.id.workButton)
+    Button workButton;
+    @BindView(R.id.breakButton)
+    Button breakButton;
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
+    @BindView(R.id.webView)
+    WebView webView;
     ArrayList<RecordsResponse> records;
     NetworkCalls networkCalls;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        username=getIntent().getStringExtra("USERNAME");
-        password=getIntent().getStringExtra("PASSWORD");
+        username = getIntent().getStringExtra("USERNAME");
+        password = getIntent().getStringExtra("PASSWORD");
+        setTitle("ID: " + username);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         networkCalls = new NetworkCalls();
+
+
+        webView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                progressBar.setVisibility(View.VISIBLE);
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url){
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+
+        });
     }
 
     public void sendBreakRequest(View view) {
-        if(isBreakStarted) {
-            networkCalls.finishRecord(username,password,idBreakStarted);
+        if (isBreakStarted) {
+            networkCalls.finishRecord(username, password, idBreakStarted);
         } else {
-            networkCalls.addRecord(username,password,"BREAK");
+            networkCalls.addRecord(username, password, "BREAK");
         }
 
     }
 
     public void sendWorkRequest(View view) {
-        if(isWorkStarted) {
-            networkCalls.finishRecord(username,password,idWorkStarted);
+        if (isWorkStarted) {
+            networkCalls.finishRecord(username, password, idWorkStarted);
         } else {
-            networkCalls.addRecord(username,password,"WORK");
+            networkCalls.addRecord(username, password, "WORK");
         }
     }
 
@@ -86,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        networkCalls.getUserDetails(username,password);
+        networkCalls.getUserDetails(username, password);
 
     }
 
@@ -98,17 +121,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onRecordsResponse(ArrayList<RecordsResponse> records) {
-        for(RecordsResponse record : records) {
-            if(!record.getFinished()) {
-                if(record.actionId.equals(WORK)) {
+        for (RecordsResponse record : records) {
+            if (!record.getFinished()) {
+                if (record.actionId.equals(WORK)) {
                     isWorkStarted = true;
                     idWorkStarted = record.id;
-                    ButtonThread workThread = new ButtonThread(record.getCreatedAt(),workButton);
+                    ButtonThread workThread = new ButtonThread(record.getCreatedAt(), workButton);
                     workThread.updateTime();
-                } else if(record.actionId.equals(BREAK)) {
+                } else if (record.actionId.equals(BREAK)) {
                     isBreakStarted = true;
                     idBreakStarted = record.id;
-                    ButtonThread breakThread = new ButtonThread(record.getCreatedAt(),breakButton);
+                    ButtonThread breakThread = new ButtonThread(record.getCreatedAt(), breakButton);
                     breakThread.updateTime();
                 }
             }
@@ -118,17 +141,18 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddRecordResponse(RecordStatus status) {
         if (status.status) {
-          Intent loginActivity = new Intent(getApplicationContext(),LoginActivity.class);
-            Toast.makeText(getApplicationContext(),"Record successfully started",Toast.LENGTH_SHORT).show();
+            Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);
+            Toast.makeText(getApplicationContext(), "Record successfully started", Toast.LENGTH_SHORT).show();
             startActivity(loginActivity);
             finish();
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinishRecordResponse(FinishRecordStatus status) {
         if (status.status) {
-            Intent loginActivity = new Intent(getApplicationContext(),LoginActivity.class);
-            Toast.makeText(getApplicationContext(),"Record successfully finished",Toast.LENGTH_SHORT).show();
+            Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);
+            Toast.makeText(getApplicationContext(), "Record successfully finished", Toast.LENGTH_SHORT).show();
             startActivity(loginActivity);
             finish();
         }
@@ -136,13 +160,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onHTMLResponse(String HTMLwebPage) {
-        webView.loadData(HTMLwebPage,"text/html; charset=UTF-8", null);
+        webView.loadData(HTMLwebPage, "text/html; charset=UTF-8", null);
 
     }
 
     public void logout(View view) {
-        Intent loginActivity = new Intent(getApplicationContext(),LoginActivity.class);
-        Toast.makeText(getApplicationContext(),"Logout successful",Toast.LENGTH_SHORT).show();
+        Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);
+        Toast.makeText(getApplicationContext(), "Logout successful", Toast.LENGTH_SHORT).show();
         startActivity(loginActivity);
         finish();
     }
@@ -157,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
             this.button = button;
         }
 
-        public void updateTime(){
+        public void updateTime() {
             Timer t = new Timer();
             t.scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -167,12 +191,12 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             int hours = Hours.hoursBetween(startTime, LocalDateTime.now(DateTimeZone.UTC)).getHours();
                             Period period = new Period(startTime, LocalDateTime.now(DateTimeZone.UTC));
-                            button.setText("Stop "+button.getTag()+" ("+hours+":"+period.getMinutes()+":"+period.getSeconds()+")");
+                            button.setText("Stop " + button.getTag() + " (" + hours + ":" + period.getMinutes() + ":" + period.getSeconds() + ")");
 
                         }
                     });
                 }
-            },0,1000);
+            }, 0, 1000);
         }
     }
 }

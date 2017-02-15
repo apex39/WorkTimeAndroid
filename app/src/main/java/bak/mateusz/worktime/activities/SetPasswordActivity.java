@@ -19,10 +19,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SetPasswordActivity extends AppCompatActivity {
-    @BindView(R.id.editTextPassword1) EditText password1;
-    @BindView(R.id.editTextPassword2) EditText password2;
-    @BindView(R.id.buttonSetPassword) Button button;
-    @BindView(R.id.progress_bar) ProgressBar progressBar;
+    @BindView(R.id.editTextPassword1)
+    EditText password1;
+    @BindView(R.id.editTextPassword2)
+    EditText password2;
+    @BindView(R.id.buttonSetPassword)
+    Button button;
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
     NetworkCalls networkCalls;
     String passwordString1;
     String passwordString2;
@@ -32,8 +36,8 @@ public class SetPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        username=getIntent().getStringExtra("USERNAME");
-        password=getIntent().getStringExtra("PASSWORD");
+        username = getIntent().getStringExtra("USERNAME");
+        password = getIntent().getStringExtra("PASSWORD");
         setTitle("ID: " + username);
         setContentView(R.layout.set_password_activity);
         ButterKnife.bind(this);
@@ -52,29 +56,29 @@ public class SetPasswordActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    private boolean checkPasswords(){
+    private boolean checkPasswords() {
         passwordString1 = this.password1.getText().toString();
         passwordString2 = this.password2.getText().toString();
         if (!passwordString1.isEmpty() && !passwordString2.isEmpty()) {
-                if(passwordString1.equals(passwordString2)){
-                    if(passwordString1.length() >=4) {
-                        return true;
-                    } else {
-                        this.password1.setText("");
-                        this.password2.setText("");
-                        Toast.makeText(getApplicationContext(),"Password must be at least 4 digits long",Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
+            if (passwordString1.equals(passwordString2)) {
+                if (passwordString1.length() >= 4) {
+                    return true;
                 } else {
                     this.password1.setText("");
                     this.password2.setText("");
-                    Toast.makeText(getApplicationContext(),"Passwords do not match",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Password must be at least 4 digits long", Toast.LENGTH_SHORT).show();
                     return false;
                 }
             } else {
-                Toast.makeText(getApplicationContext(),"Fields cannot be empty",Toast.LENGTH_SHORT).show();
+                this.password1.setText("");
+                this.password2.setText("");
+                Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
                 return false;
             }
+        } else {
+            Toast.makeText(getApplicationContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
     }
 
@@ -84,16 +88,16 @@ public class SetPasswordActivity extends AppCompatActivity {
             password2.setEnabled(false);
             view.setEnabled(false);
             progressBar.setVisibility(View.VISIBLE);
-            networkCalls.activateUser(username,password,passwordString1);
+            networkCalls.activateUser(username, password, passwordString1);
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLoginResponse(LoginResponse loginResponse) {
-        if(loginResponse.role.equals("activation") && loginResponse.status==false){
-            Toast.makeText(getApplicationContext(),"Activation failed",Toast.LENGTH_LONG).show();
-        }
-        else if(loginResponse.role.equals("activation") && loginResponse.status==true) {
-            Toast.makeText(getApplicationContext(),"You are activated, you can login now",Toast.LENGTH_LONG).show();
+        if (loginResponse.role.equals("activation") && loginResponse.status == false) {
+            Toast.makeText(getApplicationContext(), "Activation failed", Toast.LENGTH_LONG).show();
+        } else if (loginResponse.role.equals("activation") && loginResponse.status == true) {
+            Toast.makeText(getApplicationContext(), "You are activated, you can login now", Toast.LENGTH_LONG).show();
         }
         finish();
     }

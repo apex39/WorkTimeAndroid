@@ -33,11 +33,11 @@ public class NetworkCalls {
         Callback<LoginResponse> loginCallCallback = new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                LoginResponse loginResponse = new LoginResponse(null,false);
-                if(response.isSuccessful()){
-                     loginResponse = response.body();
+                LoginResponse loginResponse = new LoginResponse(null, false);
+                if (response.isSuccessful()) {
+                    loginResponse = response.body();
                 }
-                    EventBus.getDefault().post(loginResponse);
+                EventBus.getDefault().post(loginResponse);
 
             }
 
@@ -52,7 +52,7 @@ public class NetworkCalls {
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onLoginResponse(LoginResponse loginResponse) {
-        if(loginResponse.status == true){
+        if (loginResponse.status == true) {
             switch (loginResponse.role) {
                 case "worker":
                     Call<ArrayList<RecordsResponse>> recordsCall =
@@ -79,7 +79,7 @@ public class NetworkCalls {
                         public void onResponse(Call<List<ShopsResponse>> call, Response<List<ShopsResponse>> response) {
                             List<ShopsResponse> shopsResponse = response.body();
 
-                            if(shopsResponse !=null)EventBus.getDefault().post(shopsResponse);
+                            if (shopsResponse != null) EventBus.getDefault().post(shopsResponse);
                         }
 
                         @Override
@@ -107,22 +107,22 @@ public class NetworkCalls {
                     managerShopsCall.enqueue(managerShopsCallback);
                     break;
                 case "activation":
-                        EventBus.getDefault().post(loginResponse);
+                    EventBus.getDefault().post(loginResponse);
                     break;
             }
         }
         EventBus.getDefault().unregister(this);
     }
 
-    public void activateUser(String username, String password, String newPassword){
+    public void activateUser(String username, String password, String newPassword) {
         client = ClientGenerator.createService();
         Call<LoginResponse> activateUserCall =
                 client.activateUser(username, password, newPassword);
         Callback<LoginResponse> activateUserCallCallback = new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                LoginResponse loginResponse = new LoginResponse(null,false);
-                if(response.isSuccessful()){
+                LoginResponse loginResponse = new LoginResponse(null, false);
+                if (response.isSuccessful()) {
                     loginResponse = response.body();
                 }
                 EventBus.getDefault().post(loginResponse);
@@ -137,7 +137,7 @@ public class NetworkCalls {
         activateUserCall.enqueue(activateUserCallCallback);
     }
 
-    public void getUserDetails(String username, String password){
+    public void getUserDetails(String username, String password) {
         client = ClientGenerator.createService();
         Call<String> userDetailsCall =
                 client.getUserDetails(username, password);

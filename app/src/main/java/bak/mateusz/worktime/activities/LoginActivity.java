@@ -40,14 +40,19 @@ import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
 public class LoginActivity extends AppCompatActivity {
     boolean IS_MANAGER_LOGIN = false;
-    @BindView(R.id.login) EditText login;
-    @BindView(R.id.password) EditText password;
-    @BindView(R.id.loginButton) Button loginButton;
-    @BindView(R.id.progress_bar) ProgressBar progressBar;
+    @BindView(R.id.login)
+    EditText login;
+    @BindView(R.id.password)
+    EditText password;
+    @BindView(R.id.loginButton)
+    Button loginButton;
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
     MenuItem changeShop;
     SharedPreferences settings;
     String loginString;
     String passwordString;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.login_menu,menu);
+        menuInflater.inflate(R.menu.login_menu, menu);
         changeShop = menu.findItem(R.id.change_shop);
         return super.onCreateOptionsMenu(menu);
     }
@@ -100,27 +105,27 @@ public class LoginActivity extends AppCompatActivity {
             login.setHint("Manager username");
             login.setInputType(TYPE_CLASS_TEXT);
             password.setHint("Password");
-            password.setInputType(TYPE_CLASS_TEXT|TYPE_TEXT_VARIATION_PASSWORD);
+            password.setInputType(TYPE_CLASS_TEXT | TYPE_TEXT_VARIATION_PASSWORD);
             item.setTitle("Worker login");
         } else {
             IS_MANAGER_LOGIN = false;
             login.setHint("ID");
             login.setInputType(TYPE_CLASS_NUMBER);
             password.setHint("PIN");
-            password.setInputType(TYPE_CLASS_NUMBER|TYPE_NUMBER_VARIATION_PASSWORD);
+            password.setInputType(TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD);
             item.setTitle(R.string.change_shop);
         }
     }
 
     @Override
     protected void onTitleChanged(CharSequence title, int color) {
-        if(IS_MANAGER_LOGIN) {
+        if (IS_MANAGER_LOGIN) {
             IS_MANAGER_LOGIN = false;
             login.setHint("ID");
             login.setInputType(TYPE_CLASS_NUMBER);
             login.setText("");
             password.setHint("PIN");
-            password.setInputType(TYPE_CLASS_NUMBER|TYPE_NUMBER_VARIATION_PASSWORD);
+            password.setInputType(TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD);
             password.setText("");
 
             changeShop.setTitle(R.string.change_shop);
@@ -128,8 +133,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onTitleChanged(title, color);
     }
 
-    public void sendLoginRequest(View view){
-        if(password.length() >= 4) {
+    public void sendLoginRequest(View view) {
+        if (password.length() >= 4) {
             login.setEnabled(false);
             password.setEnabled(false);
             view.setEnabled(false);
@@ -137,10 +142,10 @@ public class LoginActivity extends AppCompatActivity {
             NetworkCalls networkCalls = new NetworkCalls();
             this.loginString = login.getText().toString();
             this.passwordString = password.getText().toString();
-            networkCalls.login(loginString,passwordString,
+            networkCalls.login(loginString, passwordString,
                     settings.getString("registered_shop", getString(R.string.app_name)));
         } else {
-            Toast.makeText(getApplicationContext(),"Password is too short",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Password is too short", Toast.LENGTH_SHORT).show();
             login.requestFocus();
         }
 
@@ -149,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onShopsResponse(List<ShopsResponse> shopsResponse) {
-        if (shopsResponse.size()>0){         //TODO:shopResponse shouldn't get hit after worker login
+        if (shopsResponse.size() > 0) {         //TODO:shopResponse shouldn't get hit after worker login
             String[] shopsAddresses = new String[shopsResponse.size()];
             for (int i = 0; i < shopsResponse.size(); i++) {
                 shopsAddresses[i] = shopsResponse.get(i).address;
@@ -158,10 +163,11 @@ public class LoginActivity extends AppCompatActivity {
             DialogFragment shopDialog = new ShopDialogFragment();
             FragmentManager manager = getSupportFragmentManager();
             Bundle bundle = new Bundle();
-            bundle.putStringArray("shops_addresses",shopsAddresses);
+            bundle.putStringArray("shops_addresses", shopsAddresses);
             shopDialog.setArguments(bundle);
             progressBar.setVisibility(View.INVISIBLE);
-            shopDialog.show(manager,"shop_list");}
+            shopDialog.show(manager, "shop_list");
+        }
 
     }
 
@@ -173,20 +179,19 @@ public class LoginActivity extends AppCompatActivity {
         password.setEnabled(true);
         password.setText("");
         loginButton.setEnabled(true);
-        if(loginResponse.role.equals("null") && loginResponse.status==false){
-            Toast.makeText(getApplicationContext(),"Bad credentials",Toast.LENGTH_LONG).show();
+        if (loginResponse.role.equals("null") && loginResponse.status == false) {
+            Toast.makeText(getApplicationContext(), "Bad credentials", Toast.LENGTH_LONG).show();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-        }
-        else if(loginResponse.role.equals("worker") && loginResponse.status==false) {
-            Toast.makeText(getApplicationContext(),"You are not activated, please provide a new password",Toast.LENGTH_LONG).show();
+        } else if (loginResponse.role.equals("worker") && loginResponse.status == false) {
+            Toast.makeText(getApplicationContext(), "You are not activated, please provide a new password", Toast.LENGTH_LONG).show();
             Intent setPasswordIntent = new Intent(getApplicationContext(), SetPasswordActivity.class);
             setPasswordIntent.putExtra("USERNAME", this.loginString);
             setPasswordIntent.putExtra("PASSWORD", this.passwordString);
             EventBus.getDefault().unregister(this);
             startActivity(setPasswordIntent);
             finish();
-        } else if(loginResponse.role.equals("worker") && loginResponse.status==true) {
+        } else if (loginResponse.role.equals("worker") && loginResponse.status == true) {
             Intent setPasswordIntent = new Intent(getApplicationContext(), MainActivity.class);
             setPasswordIntent.putExtra("USERNAME", this.loginString);
             setPasswordIntent.putExtra("PASSWORD", this.passwordString);

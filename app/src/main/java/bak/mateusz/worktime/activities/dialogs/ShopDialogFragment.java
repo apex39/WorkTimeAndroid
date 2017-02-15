@@ -20,7 +20,7 @@ public class ShopDialogFragment extends DialogFragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        shopsAddresses=getArguments().getStringArray("shops_addresses");
+        shopsAddresses = getArguments().getStringArray("shops_addresses");
 
         super.onCreate(savedInstanceState);
     }
@@ -38,7 +38,7 @@ public class ShopDialogFragment extends DialogFragment {
                         editor.putString("registered_shop", shopsAddresses[which]);
                         editor.apply();
                         getActivity().setTitle(shopsAddresses[which]);
-                        Toast.makeText(getActivity().getApplicationContext(),"Shop successfully changed",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "Shop successfully changed", Toast.LENGTH_LONG).show();
                     }
                 });
         return builder.create();
