@@ -7,12 +7,13 @@ import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created by user on 2016.07.12..
  */
-class ClientGenerator {
-    private static final String API_BASE_URL = "http://192.168.10.10/api/";
+public class ClientGenerator {
+    public static final String API_BASE_URL = "http://192.168.10.10/api/";
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
@@ -25,6 +26,7 @@ class ClientGenerator {
         builder =
                 new Retrofit.Builder()
                         .baseUrl(API_BASE_URL)
+                        .addConverterFactory(ScalarsConverterFactory.create())
                         .addConverterFactory(GsonConverterFactory.create(gson));
         Retrofit retrofit = builder.client(httpClient.build()).build();
         return retrofit.create(WorkTimeClient.class);

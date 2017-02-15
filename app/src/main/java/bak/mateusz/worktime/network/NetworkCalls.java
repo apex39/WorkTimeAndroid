@@ -7,7 +7,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import bak.mateusz.worktime.models.FinishRecordStatus;
 import bak.mateusz.worktime.models.LoginResponse;
+import bak.mateusz.worktime.models.RecordStatus;
 import bak.mateusz.worktime.models.RecordsResponse;
 import bak.mateusz.worktime.models.ShopsResponse;
 import retrofit2.Call;
@@ -133,5 +135,62 @@ public class NetworkCalls {
         };
 
         activateUserCall.enqueue(activateUserCallCallback);
+    }
+
+    public void getUserDetails(String username, String password){
+        client = ClientGenerator.createService();
+        Call<String> userDetailsCall =
+                client.getUserDetails(username, password);
+        Callback<String> userDetailsCallCallback = new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> HTMLResponse) {
+                EventBus.getDefault().post(HTMLResponse.body());
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                EventBus.getDefault().post(t);
+            }
+        };
+
+        userDetailsCall.enqueue(userDetailsCallCallback);
+    }
+
+    public void addRecord(String username, String password, String recordType) {
+        client = ClientGenerator.createService();
+        Call<RecordStatus> addRecordCall =
+                client.addRecord(username, password, recordType);
+        Callback<RecordStatus> recordStatusCallback = new Callback<RecordStatus>() {
+            @Override
+            public void onResponse(Call<RecordStatus> call, Response<RecordStatus> status) {
+                EventBus.getDefault().post(status.body());
+            }
+
+            @Override
+            public void onFailure(Call<RecordStatus> call, Throwable t) {
+                EventBus.getDefault().post(t);
+            }
+        };
+
+        addRecordCall.enqueue(recordStatusCallback);
+    }
+
+    public void finishRecord(String username, String password, Integer recordId) {
+        client = ClientGenerator.createService();
+        Call<FinishRecordStatus> finishRecordStatusCall =
+                client.finishRecord(username, password, recordId);
+        Callback<FinishRecordStatus> finishRecordStatusCallback = new Callback<FinishRecordStatus>() {
+            @Override
+            public void onResponse(Call<FinishRecordStatus> call, Response<FinishRecordStatus> status) {
+                EventBus.getDefault().post(status.body());
+            }
+
+            @Override
+            public void onFailure(Call<FinishRecordStatus> call, Throwable t) {
+                EventBus.getDefault().post(t);
+            }
+        };
+
+        finishRecordStatusCall.enqueue(finishRecordStatusCallback);
     }
 }

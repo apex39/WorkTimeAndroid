@@ -27,14 +27,11 @@ import java.util.List;
 
 import bak.mateusz.worktime.R;
 import bak.mateusz.worktime.activities.dialogs.ShopDialogFragment;
-
 import bak.mateusz.worktime.models.LoginResponse;
 import bak.mateusz.worktime.models.ShopsResponse;
 import bak.mateusz.worktime.network.NetworkCalls;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
 
 import static android.text.InputType.TYPE_CLASS_NUMBER;
 import static android.text.InputType.TYPE_CLASS_TEXT;
@@ -49,7 +46,8 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.progress_bar) ProgressBar progressBar;
     MenuItem changeShop;
     SharedPreferences settings;
-
+    String loginString;
+    String passwordString;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,7 +135,9 @@ public class LoginActivity extends AppCompatActivity {
             view.setEnabled(false);
             progressBar.setVisibility(View.VISIBLE);
             NetworkCalls networkCalls = new NetworkCalls();
-            networkCalls.login(login.getText().toString(),password.getText().toString(),
+            this.loginString = login.getText().toString();
+            this.passwordString = password.getText().toString();
+            networkCalls.login(loginString,passwordString,
                     settings.getString("registered_shop", getString(R.string.app_name)));
         } else {
             Toast.makeText(getApplicationContext(),"Password is too short",Toast.LENGTH_SHORT).show();
@@ -181,15 +181,15 @@ public class LoginActivity extends AppCompatActivity {
         else if(loginResponse.role.equals("worker") && loginResponse.status==false) {
             Toast.makeText(getApplicationContext(),"You are not activated, please provide a new password",Toast.LENGTH_LONG).show();
             Intent setPasswordIntent = new Intent(getApplicationContext(), SetPasswordActivity.class);
-            setPasswordIntent.putExtra("USERNAME", login.getText().toString());
-            setPasswordIntent.putExtra("PASSWORD", password.getText().toString());
+            setPasswordIntent.putExtra("USERNAME", this.loginString);
+            setPasswordIntent.putExtra("PASSWORD", this.passwordString);
             EventBus.getDefault().unregister(this);
             startActivity(setPasswordIntent);
             finish();
         } else if(loginResponse.role.equals("worker") && loginResponse.status==true) {
             Intent setPasswordIntent = new Intent(getApplicationContext(), MainActivity.class);
-            setPasswordIntent.putExtra("USERNAME", login.getText().toString());
-            setPasswordIntent.putExtra("PASSWORD", password.getText().toString());
+            setPasswordIntent.putExtra("USERNAME", this.loginString);
+            setPasswordIntent.putExtra("PASSWORD", this.passwordString);
             EventBus.getDefault().unregister(this);
             startActivity(setPasswordIntent);
             finish();

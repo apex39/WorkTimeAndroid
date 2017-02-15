@@ -1,6 +1,5 @@
 package bak.mateusz.worktime.activities.dialogs;
 
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -10,11 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
-
-import java.util.List;
-
-import bak.mateusz.worktime.R;
-import bak.mateusz.worktime.models.ShopsResponse;
 
 /**
  * Created by phpstorm on 12.02.17.

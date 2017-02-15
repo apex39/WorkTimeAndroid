@@ -1,14 +1,7 @@
 package bak.mateusz.worktime.activities;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,20 +12,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.List;
-
 import bak.mateusz.worktime.R;
-import bak.mateusz.worktime.activities.dialogs.ShopDialogFragment;
 import bak.mateusz.worktime.models.LoginResponse;
-import bak.mateusz.worktime.models.ShopsResponse;
 import bak.mateusz.worktime.network.NetworkCalls;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static android.text.InputType.TYPE_CLASS_NUMBER;
-import static android.text.InputType.TYPE_CLASS_TEXT;
-import static android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD;
-import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
 public class SetPasswordActivity extends AppCompatActivity {
     @BindView(R.id.editTextPassword1) EditText password1;

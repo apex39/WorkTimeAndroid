@@ -39,10 +39,17 @@
             android:id="@+id/breakButton"
             android:text="Start break"
             android:tag="break"/>
-
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="logout"
+            android:id="@+id/logoutButton"
+            android:text="Logout"
+            />
         <WebView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></WebView>
+            android:layout_height="wrap_content"
+            android:id="@+id/webView"></WebView>
     </LinearLayout>
 
 </LinearLayout>

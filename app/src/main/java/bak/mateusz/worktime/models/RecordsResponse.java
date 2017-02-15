@@ -4,8 +4,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 public class RecordsResponse {
 
@@ -31,11 +31,11 @@ public class RecordsResponse {
     @Expose
     public Integer minutesSpent;
 
-    public DateTime getCreatedAt(){
-            return DateTime.parse(createdAt, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"));
+    public LocalDateTime getCreatedAt(){
+            return DateTime.parse(createdAt, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")).toLocalDateTime();
     }
-    public DateTime getUpdatedAt(){
-        return DateTime.parse(updatedAt, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"));
+    public LocalDateTime getUpdatedAt(){
+        return DateTime.parse(updatedAt, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")).toLocalDateTime();
     }
     public boolean getFinished(){
         return finished == 1;
